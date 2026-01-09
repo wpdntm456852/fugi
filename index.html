@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>후지산 1일 투어 일정 요약</title>
+
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --text: #0f172a;
+      --muted: #475569;
+
+      --blue: #2563eb;   /* 이동/미팅 */
+      --green: #16a34a;  /* 자연/전망 */
+      --orange:#f97316;  /* 사진 스팟 */
+      --gray:  #64748b;  /* 주의 */
+
+      --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+      --radius: 16px;
+      --line: rgba(226,232,240,.95);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 80% 0%, rgba(37,99,235,.12), transparent 60%),
+        radial-gradient(900px 600px at 0% 20%, rgba(22,163,74,.10), transparent 55%),
+        var(--bg);
+    }
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:28px 18px 40px; }
+
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(24px, 3.2vw, 36px);
+      letter-spacing:-0.02em;
+      line-height:1.15;
+    }
+    .subtitle{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .badge-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(226,232,240,.9);
+      backdrop-filter: blur(8px);
+      font-size:12px;
+      color: var(--muted);
+    }
+    .dot{ width:8px; height:8px; border-radius:999px; }
+    .dot.blue{ background:var(--blue); }
+    .dot.green{ background:var(--green); }
+    .dot.orange{ background:var(--orange); }
+    .dot.gray{ background:var(--gray); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+
+    .card{
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hd{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(226,232,240,.8);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .hd h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:-0.01em;
+    }
+    .bd{ padding:16px; }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      border:1px solid rgba(226,232,240,.95);
+      background: rgba(248,250,252,.9);
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .tag.blue{ background: rgba(37,99,235,.10); color:#1e40af; border-color: rgba(37,99,235,.20); }
+    .tag.green{ background: rgba(22,163,74,.10); color:#166534; border-color: rgba(22,163,74,.20); }
+    .tag.orange{ background: rgba(249,115,22,.10); color:#9a3412; border-color: rgba(249,115,22,.20); }
+    .tag.gray{ background: rgba(100,116,139,.10); color:#334155; border-color: rgba(100,116,139,.20); }
+
+    /* 미팅 */
+    .meeting{ display:grid; gap:10px; }
+    .meeting .item{
+      display:grid;
+      grid-template-columns: auto 1fr;
+      gap:12px;
+      padding:12px;
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:14px;
+      background: rgba(255,255,255,.92);
+    }
+    .time{
+      font-weight:900;
+      font-size:14px;
+      white-space:nowrap;
+      color:var(--blue);
+    }
+    .ttl{ font-weight:900; font-size:13px; letter-spacing:-0.01em; }
+    .sub{ font-size:12px; color:var(--muted); line-height:1.45; margin-top:3px; }
+
+    .notice{
+      margin-top:10px;
+      padding:12px;
+      border-radius:14px;
+      border:1px dashed rgba(100,116,139,.35);
+      background: rgba(248,250,252,.7);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    /* 타임라인 */
+    .timeline{
+      position:relative;
+      display:grid;
+      gap:10px;
+      padding-left:8px;
+    }
+    .timeline::before{
+      content:"";
+      position:absolute;
+      left:18px;
+      top:6px;
+      bottom:6px;
+      width:2px;
+      background: linear-gradient(to bottom, rgba(37,99,235,.55), rgba(22,163,74,.35));
+    }
+
+    .event{
+      position:relative;
+      display:grid;
+      grid-template-columns: 70px 1fr;
+      gap:12px;
+      padding:12px;
+      border:1px solid rgba(226,232,240,.9);
+      border-radius:14px;
+      background: rgba(255,255,255,.94);
+      overflow:hidden;
+    }
+    .node{
+      position:absolute;
+      left:11px;
+      top:18px;
+      width:16px; height:16px;
+      border-radius:999px;
+      border:3px solid #fff;
+      box-shadow: 0 6px 18px rgba(2,6,23,.12);
+    }
+    .node.blue{ background:var(--blue); }
+    .node.green{ background:var(--green); }
+    .node.orange{ background:var(--orange); }
+
+    .t{
+      font-weight:900;
+      font-size:13px;
+      white-space:nowrap;
+    }
+    .t small{
+      display:inline-block;
+      margin-top:5px;
+      font-weight:800;
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .c{ display:grid; gap:8px; }
+    .name{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:8px;
+      font-weight:900;
+      letter-spacing:-0.01em;
+      font-size:14px;
+      margin:0;
+    }
+    .txt{
+      margin:0;
+      font-size:12.5px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    /* 타임라인 이미지 */
+    .thumb{
+      width:100%;
+      aspect-ratio: 16 / 9;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(226,232,240,.95);
+      background: rgba(248,250,252,.7);
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .thumbcap{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.4;
+    }
+
+    /* 우측: 이미지+지도+리스크 */
+    .hero{
+      display:grid;
+      grid-template-rows: auto auto auto auto auto;
+    }
+    .hero .bd{ padding:0; }
+    .imgbox{
+      min-height: 260px;
+      background:
+        linear-gradient(120deg, rgba(2,6,23,.35), rgba(2,6,23,.08)),
+        url("1. 아라쿠라야마 센겐공원.jpg") center / cover no-repeat;
+      display:grid;
+      place-items:end start;
+      padding:18px;
+    }
+    .overlay{
+      max-width: 520px;
+      background: rgba(255,255,255,.86);
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:14px;
+      padding:12px;
+      backdrop-filter: blur(8px);
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .pill{
+      background: rgba(37,99,235,.12);
+      color:#1e40af;
+      border:1px solid rgba(37,99,235,.20);
+      padding:3px 8px;
+      border-radius:999px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+    .lead{
+      margin:0;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .meta{
+      margin-top:8px;
+      display:grid;
+      gap:6px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .meta strong{ color:var(--text); }
+
+    /* 지도 */
+    .map-wrap{ padding:16px; }
+    .map-frame{
+      width:100%;
+      aspect-ratio: 16 / 10;
+      border:1px solid rgba(226,232,240,.95);
+      border-radius:14px;
+      overflow:hidden;
+      background: rgba(248,250,252,.8);
+      box-shadow: 0 10px 20px rgba(2,6,23,.06);
+    }
+    .map-frame iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+    }
+
+    /* 리턴/리스크 */
+    .returnbox{ padding:16px; display:grid; gap:10px; }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(226,232,240,.9);
+      background: rgba(255,255,255,.92);
+    }
+    .icon{
+      width:34px; height:34px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-weight:900;
+      flex:0 0 34px;
+    }
+    .icon.blue{ background:var(--blue); }
+    .icon.gray{ background:var(--gray); }
+    .rt{ display:grid; gap:2px; }
+    .k{ font-weight:900; font-size:13px; letter-spacing:-0.01em; }
+    .v{ font-size:12px; color:var(--muted); line-height:1.45; }
+
+    ul.clean{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.65;
+    }
+    ul.clean li{ margin:6px 0; }
+
+    footer{
+      margin-top:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.6;
+    }
+
+    @media (max-width: 920px){
+      .grid{ grid-template-columns: 1fr; }
+      .badge-row{ justify-content:flex-start; }
+      .map-frame{ aspect-ratio: 16 / 11; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>후지산 1일 투어 일정 요약</h1>
+        <p class="subtitle">도쿄 출발 · 센겐공원 → 히카와 시계점 → 오시노핫카이 → 가와구치코 로손 → 오이시 공원</p>
+      </div>
+
+      <div class="badge-row" aria-label="범례">
+        <span class="badge"><span class="dot blue"></span>이동/미팅</span>
+        <span class="badge"><span class="dot orange"></span>사진 스팟</span>
+        <span class="badge"><span class="dot green"></span>자연/전망</span>
+        <span class="badge"><span class="dot gray"></span>주의/리스크</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <!-- 좌측: 미팅 + 타임라인 -->
+      <div class="card">
+        <div class="hd">
+          <h2>출발 · 미팅</h2>
+          <span class="tag blue">시간 엄수</span>
+        </div>
+        <div class="bd">
+          <div class="meeting">
+            <div class="item">
+              <div class="time">07:45</div>
+              <div>
+                <div class="ttl">미팅장소 1: JR 도쿄역 마루노우치 미나미구치</div>
+                <div class="sub">가이드(GoGoDay 표지판) 확인 · 08:00 도쿄역 출발</div>
+              </div>
+            </div>
+
+            <div class="item">
+              <div class="time">08:15</div>
+              <div>
+                <div class="ttl">미팅장소 2: 신주쿠 도쿄 MODE학원 앞</div>
+                <div class="sub">08:30 최종 출발 (도쿄역 출발 버스가 신주쿠를 경유하지 않을 수 있음)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notice">
+            <strong>[사전 안내]</strong><br/>
+            • 전날 19~21시 이메일로 일정확인서 발송(가이드 연락처/차량번호 포함)<br/>
+            • 후지산 가시성·교통 체증에 따라 가이드가 방문 순서를 조정할 수 있음
+          </div>
+        </div>
+
+        <div class="hd">
+          <h2>투어 타임라인</h2>
+          <span class="tag gray">현장 상황 반영</span>
+        </div>
+
+        <div class="bd">
+          <div class="timeline">
+
+            <!-- 1 -->
+            <div class="event">
+              <span class="node green" aria-hidden="true"></span>
+              <div class="t">10:30<br/><small>60분</small></div>
+              <div class="c">
+                <p class="name">아라쿠라야마 센겐 공원 <span class="tag green">전망</span></p>
+                <div class="thumb">
+                  <img src="1. 아라쿠라야마 센겐공원.jpg" alt="아라쿠라야마 센겐 공원 이미지" />
+                </div>
+                <div class="thumbcap">오층탑 + 후지산 대표 구도(계단 이동으로 체력 변수).</div>
+              </div>
+            </div>
+
+            <!-- 2 -->
+            <div class="event">
+              <span class="node orange" aria-hidden="true"></span>
+              <div class="t">11:45<br/><small>20분</small></div>
+              <div class="c">
+                <p class="name">히카와 시계점 <span class="tag orange">사진</span></p>
+                <div class="thumb">
+                  <img src="2. 히카와 시계점.png" alt="히카와 시계점 이미지" />
+                </div>
+                <div class="thumbcap">로손 가림막 이후 주목받는 신흥 포토 스팟(짧게 촬영 후 이동 권장).</div>
+              </div>
+            </div>
+
+            <!-- 3 -->
+            <div class="event">
+              <span class="node green" aria-hidden="true"></span>
+              <div class="t">12:30<br/><small>60분</small></div>
+              <div class="c">
+                <p class="name">오시노 핫카이 <span class="tag green">마을·용천수</span></p>
+                <div class="thumb">
+                  <img src="3. 오시노 핫카이.png" alt="오시노 핫카이 이미지" />
+                </div>
+                <div class="thumbcap">후지산 용천수로 형성된 8개의 샘(주변 음식점에서 자유 점심).</div>
+              </div>
+            </div>
+
+            <!-- 4 -->
+            <div class="event">
+              <span class="node orange" aria-hidden="true"></span>
+              <div class="t">14:30<br/><small>20분</small></div>
+              <div class="c">
+                <p class="name">가와구치코 로손 <span class="tag orange">사진</span></p>
+                <div class="thumb">
+                  <img src="4. 가와구치코 로손.jpg" alt="가와구치코 로손 이미지" />
+                </div>
+                <div class="thumbcap">편의점 앞에서 후지산과 함께 촬영(인파·대기 발생 가능).</div>
+              </div>
+            </div>
+
+            <!-- 5 -->
+            <div class="event">
+              <span class="node green" aria-hidden="true"></span>
+              <div class="t">15:20<br/><small>50분</small></div>
+              <div class="c">
+                <p class="name">오이시 공원 <span class="tag green">호수·산책</span></p>
+                <div class="thumb">
+                  <img src="5.오이시 공원.jpg" alt="오이시 공원 이미지" />
+                </div>
+                <div class="thumbcap">호반 조망 포인트(라벤더/벚꽃/단풍은 시즌 별도, 겨울은 비수기).</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 우측: 히어로 + 지도 + 귀환/리스크 -->
+      <aside class="card hero">
+        <div class="hd">
+          <h2>한눈에 보기</h2>
+          <span class="tag blue">1-Day Tour</span>
+        </div>
+
+        <div class="bd">
+          <div class="imgbox" role="img" aria-label="후지산 이미지 영역">
+            <div class="overlay">
+              <div class="kicker"><span class="pill">TIP</span><span>오전 포인트에서 컷 확보가 핵심</span></div>
+              <p class="lead">후지산은 구름/가시성 변수가 크므로, 일정 순서는 현장 상황에 따라 조정될 수 있습니다.</p>
+              <div class="meta">
+                <div><strong>운영:</strong> 가시성·교통에 따라 순서/체류시간 변경 가능</div>
+                <div><strong>대기:</strong> 로손/시계점은 혼잡 시 “짧게 찍고 이탈”이 손실 최소</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hd">
+          <h2>지도</h2>
+          <span class="tag gray">Google Maps</span>
+        </div>
+        <div class="map-wrap">
+          <div class="map-frame" aria-label="구글 지도">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m58!1m12!1m3!1d415393.6865384328!2d138.92581773406212!3d35.5718955415685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m43!3e0!4m5!1s0x60188bfbd89f700b%3A0x277c49ba34ed38!2z64-E7L-E!3m2!1d35.681299599999996!2d139.76706579999998!4m5!1s0x6019674d1d58a8bb%3A0x8fee767dd147a07d!2z7JWE65287L-g65287JW866eIIOyEvOqykOqzteybkA!3m2!1d35.501390799999996!2d138.8016313!4m5!1s0x601967342f7501ff%3A0x1e8fe68035144f43!2z7Z6I7Lm07JmAIOyLnOqzhOygkA!3m2!1d35.4927025!2d138.8040293!4m5!1s0x601966859f99842b%3A0x163aa46bb0af9f71!2z7Jik7Iuc64W4IO2Vq-y5tOydtA!3m2!1d35.4600675!2d138.83247409999998!4m5!1s0x60195e28296a89bf%3A0x611c18cefec8cb56!2z66Gc7IaQIO2OuOydmOygkA!3m2!1d35.4986175!2d138.7671672!4m5!1s0x60195fa68c0b2b95%3A0xa22e530b3a652904!2z7Jik7J207IucIOqzteybkCDsnbzrs7gg44CSNDAxLTAzMDUgWWFtYW5hc2hpLCBNaW5hbWl0c3VydSBEaXN0cmljdCwgRnVqaWthd2FndWNoaWtvLCBPaXNoaSwg77yS77yV77yS77yV55Wq5Zyw44Gu77yR77yR5YWI!3m2!1d35.522904!2d138.7457522!4m5!1s0x60188bfbd89f700b%3A0x277c49ba34ed38!2z64-E7L-EIOydvOuzuCDjgJIxMDAtMDAwNSBUb2t5bywgQ2hpeW9kYSBDaXR5LCBNYXJ1bm91Y2hpLCAxIENob21l!3m2!1d35.681299599999996!2d139.76706579999998!5e0!3m2!1sko!2skr!4v1767972922463!5m2!1sko!2skr"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+              title="후지산 1일 투어 지도">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="hd">
+          <h2>귀환 · 안내 · 리스크</h2>
+          <span class="tag gray">필독</span>
+        </div>
+        <div class="returnbox">
+          <div class="row">
+            <div class="icon blue" aria-hidden="true">🚌</div>
+            <div class="rt">
+              <div class="k">16:20 도쿄 시내로 출발</div>
+              <div class="v">이동 약 2시간 (정체 시 변동 가능)</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="icon blue" aria-hidden="true">📍</div>
+            <div class="rt">
+              <div class="k">18:20 도쿄 도착</div>
+              <div class="v">하차는 탑승 지점과 동일(도쿄역/신주쿠)</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="icon gray" aria-hidden="true">⚠</div>
+            <div class="rt">
+              <div class="k">운영 변동 가능</div>
+              <div class="v">후지산 가시성·교통 체증·인파에 따라 순서/체류시간 조정 가능</div>
+            </div>
+          </div>
+
+          <ul class="clean">
+            <li><strong>이메일 확인:</strong> 전날 19~21시 일정확인서(연락처/차량번호) 수신 여부 체크</li>
+            <li><strong>집결:</strong> 출발 시간 이전 도착 권장, GoGoDay 표지판 가이드 확인</li>
+            <li><strong>혼잡 대응:</strong> 로손/시계점 대기 길면 컷만 확보하고 이동</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      이미지 파일과 HTML을 같은 폴더에 두면 타임라인에 자동 표시됩니다.
+    </footer>
+  </div>
+</body>
+</html>
