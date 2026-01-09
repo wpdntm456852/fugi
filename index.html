@@ -73,7 +73,9 @@
       font-size:12px;
       color: var(--muted);
     }
-    .dot{ width:8px; height:8px; border-radius:999px; }
+
+    /* 공용 점(범례/타임라인 공용) */
+    .dot{ width:8px; height:8px; border-radius:999px; display:inline-block; }
     .dot.blue{ background:var(--blue); }
     .dot.green{ background:var(--green); }
     .dot.orange{ background:var(--orange); }
@@ -175,38 +177,41 @@
     .event{
       position:relative;
       display:grid;
-      grid-template-columns: 70px 1fr;
-      gap:12px;
-      padding:12px;
+      grid-template-columns: 96px 1fr; /* 시간 영역 넓힘 */
+      gap:14px;
+      padding:12px 12px 12px 28px;   /* 세로선과 거리 확보 */
       border:1px solid rgba(226,232,240,.9);
       border-radius:14px;
       background: rgba(255,255,255,.94);
       overflow:hidden;
     }
-    .node{
-      position:absolute;
-      left:11px;
-      top:18px;
-      width:16px; height:16px;
-      border-radius:999px;
-      border:3px solid #fff;
-      box-shadow: 0 6px 18px rgba(2,6,23,.12);
-    }
-    .node.blue{ background:var(--blue); }
-    .node.green{ background:var(--green); }
-    .node.orange{ background:var(--orange); }
 
+    /* 시간 블록: 점 + 시간(1줄) / 소요시간(2줄) */
     .t{
       font-weight:900;
       font-size:13px;
       white-space:nowrap;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
+    .t .tline{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      line-height:1;
+    }
+    .t .dot{ width:10px; height:10px; } /* 타임라인은 조금 크게 */
+    .t.blue .dot{ background:var(--blue); }
+    .t.green .dot{ background:var(--green); }
+    .t.orange .dot{ background:var(--orange); }
+    .t.gray .dot{ background:var(--gray); }
+
     .t small{
-      display:inline-block;
-      margin-top:5px;
       font-weight:800;
       font-size:11px;
       color:var(--muted);
+      line-height:1.2;
     }
 
     .c{ display:grid; gap:8px; }
@@ -432,8 +437,10 @@
 
             <!-- 1 -->
             <div class="event">
-              <span class="node green" aria-hidden="true"></span>
-              <div class="t">10:30<br/><small>60분</small></div>
+              <div class="t green">
+                <div class="tline"><span class="dot green"></span><span>10:30</span></div>
+                <small>60분</small>
+              </div>
               <div class="c">
                 <p class="name">아라쿠라야마 센겐 공원 <span class="tag green">전망</span></p>
                 <div class="thumb">
@@ -445,8 +452,10 @@
 
             <!-- 2 -->
             <div class="event">
-              <span class="node orange" aria-hidden="true"></span>
-              <div class="t">11:45<br/><small>20분</small></div>
+              <div class="t orange">
+                <div class="tline"><span class="dot orange"></span><span>11:45</span></div>
+                <small>20분</small>
+              </div>
               <div class="c">
                 <p class="name">히카와 시계점 <span class="tag orange">사진</span></p>
                 <div class="thumb">
@@ -458,8 +467,10 @@
 
             <!-- 3 -->
             <div class="event">
-              <span class="node green" aria-hidden="true"></span>
-              <div class="t">12:30<br/><small>60분</small></div>
+              <div class="t green">
+                <div class="tline"><span class="dot green"></span><span>12:30</span></div>
+                <small>60분</small>
+              </div>
               <div class="c">
                 <p class="name">오시노 핫카이 <span class="tag green">마을·용천수</span></p>
                 <div class="thumb">
@@ -471,8 +482,10 @@
 
             <!-- 4 -->
             <div class="event">
-              <span class="node orange" aria-hidden="true"></span>
-              <div class="t">14:30<br/><small>20분</small></div>
+              <div class="t orange">
+                <div class="tline"><span class="dot orange"></span><span>14:30</span></div>
+                <small>20분</small>
+              </div>
               <div class="c">
                 <p class="name">가와구치코 로손 <span class="tag orange">사진</span></p>
                 <div class="thumb">
@@ -484,8 +497,10 @@
 
             <!-- 5 -->
             <div class="event">
-              <span class="node green" aria-hidden="true"></span>
-              <div class="t">15:20<br/><small>50분</small></div>
+              <div class="t green">
+                <div class="tline"><span class="dot green"></span><span>15:20</span></div>
+                <small>50분</small>
+              </div>
               <div class="c">
                 <p class="name">오이시 공원 <span class="tag green">호수·산책</span></p>
                 <div class="thumb">
